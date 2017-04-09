@@ -11,8 +11,9 @@ var swarm = require('webrtc-swarm')
 var pump = require('pump')
 var cluster = require('webm-cluster-stream')
 
-var app = choo()
+var split = require('./split')
 
+var app = choo()
 app.use(function (state, emitter) {
   state.key = ''
 
@@ -31,7 +32,7 @@ var home = function (state, emit) {
   return html`
     <div class=${style}>
       <h1>hypercast.club</h1>
-      <h2><a href="/broadcast">Broadcast</a></h2>
+      <h2><a href="/broadcast">Broadcastz</a></h2>
       <h2><a href="/watch">Watch</a></h2>
       <label>key</label><input type="text" oninput=${ updateKey } />
     </div>
@@ -54,11 +55,11 @@ var broadcast = function (state, emit) {
   function start () {
     getUserMedia(function (err, stream) {
       if (err) {
-        console.log('error: ', err)
+        console.log('getUserMedia error:', err)
       } else {
         document.getElementById('player').srcObject = stream
         var opts = {
-          interval: 1000,
+          mimeType: 'video/webm',
           videoBitsPerSecond: 500000,
           audioBitsPerSecond: 64000
         }
@@ -71,34 +72,34 @@ var broadcast = function (state, emit) {
           console.log('feed ready')
 
           var key = feed.discoveryKey.toString('hex')
-          console.log('broadcast key: ', feed.key.toString('hex'))
+          console.log('broadcast key:', feed.key.toString('hex'))
 
           var hub = signalhub(key, ['https://signalhub.mafintosh.com'])
 
           var sw = swarm(hub)
           sw.on('peer', function (peer, id) {
-            console.log('connected to new peer: ', id)
+            console.log('connected to new peer:', id)
             pump(peer, feed.replicate({ live: true, encrypt: false }), peer, function (err) {
-              console.log('pump error: ', err)
+              if (err) console.log('pump error:', err)
             })
           })
         })
 
-        var cl = cluster()
-        cl.once('data', function (header) {
-          console.log('header: ', header)
-          cl.on('data', function (cluster) {
-            console.log('cluster: ', cluster)
-          })
-        })
-
-        var mediaStream = pump(mediaRecorder, cl, function (err) {
-          console.log('pump ended')
+        var mediaStream = pump(mediaRecorder, cluster(), function (err) {
+          if (err) console.log('pump error:', err)
         })
 
         mediaStream.on('data', function (data) {
-          console.log('new data: ', data.length)
-          feed.append(data)
+          console.log('appending new data:', data)
+          if (data.length > 200) {
+            split(data, 30, function (arr) {
+              arr.forEach(function (chunk) {
+                feed.append(chunk)
+              })
+            })
+          } else {
+            feed.append(data)
+          }
         })
       }
     })
@@ -128,14 +129,13 @@ var watch = function (state, emit) {
       var sw = swarm(hub)
 
       sw.on('peer', function (peer, id) {
-        console.log('connected to new peer: ', id)
+        console.log('connected to new peer:', id)
         pump(peer, feed.replicate({ live: true, encrypt: false }), peer, function (err) {
-          console.log('pump error: ', err)
+          if (err) console.log('pump error:', err)
         })
       })
 
       feed.get(0, function (err, data) {
-        console.log('calculating offset')
         var offset = feed.length
         var buf = 4
         while (buf-- && offset > 1) offset--
