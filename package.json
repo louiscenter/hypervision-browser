@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "bankai index.js --debug --css [ -u sheetify-nested ]"
+    "start": "bankai index.js --debug --css [ -u sheetify-nested ]",
+    "build": "bankai build index.js dist/ --css [ -u sheetify-nested ]"
   },
   "keywords": [],
   "author": "",
