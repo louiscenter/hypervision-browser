@@ -175,7 +175,7 @@ var watch = function (state, emit) {
 
             if (sourceBuffer.updating || queue.length > 0) {
               console.log('pushing to queue')
-              queue.push(data.buffer)
+              queue.push(buf)
             } else {
               console.log('appending fresh data')
               sourceBuffer.appendBuffer(buf)
