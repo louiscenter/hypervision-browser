@@ -59,7 +59,7 @@ var broadcast = function (state, emit) {
       } else {
         document.getElementById('player').srcObject = stream
         var opts = {
-          mimeType: 'video/webm',
+          mimeType: 'video/webm;codecs=vp9,opus',
           videoBitsPerSecond: 500000,
           audioBitsPerSecond: 64000
         }
@@ -91,15 +91,16 @@ var broadcast = function (state, emit) {
 
         mediaStream.on('data', function (data) {
           console.log('appending new data:', data)
-          if (data.length > 200) {
-            split(data, 30, function (arr) {
-              arr.forEach(function (chunk) {
-                feed.append(chunk)
-              })
-            })
-          } else {
-            feed.append(data)
-          }
+          // if (data.length > 1000) {
+          //   split(data, 30, function (arr) {
+          //     arr.forEach(function (chunk) {
+          //       feed.append(chunk)
+          //     })
+          //   })
+          // } else {
+          //   feed.append(data)
+          // }
+          feed.append(data)
         })
       }
     })
@@ -115,41 +116,78 @@ var watch = function (state, emit) {
   `
 
   function start () {
-    console.log('state.key: ', state.key)
-    var opts = {sparse: true}
-    var feed = hypercore(ram, state.key, opts)
+    var codec = 'video/webm;codecs=vp9,opus'
+    var mediaSource = new MediaSource()
+    var video = document.getElementById('player')
+    video.src = URL.createObjectURL(mediaSource)
+    mediaSource.addEventListener('sourceopen', open)
 
-    feed.on('ready', function () {
-      console.log('feed ready')
+    function open () {
+      console.log('ran sourceopen')
+      var sourceBuffer = mediaSource.addSourceBuffer(codec)
+      var opts = {sparse: true}
+      var feed = hypercore(ram, state.key, opts)
 
-      feed.get(0, function () {})
+      feed.on('ready', function () {
+        console.log('feed ready')
 
-      var key = feed.discoveryKey.toString('hex')
-      var hub = signalhub(key, ['https://signalhub.mafintosh.com'])
-      var sw = swarm(hub)
+        feed.get(0, function () {})
 
-      sw.on('peer', function (peer, id) {
-        console.log('connected to new peer:', id)
-        pump(peer, feed.replicate({ live: true, encrypt: false }), peer, function (err) {
-          if (err) console.log('pump error:', err)
+        var key = feed.discoveryKey.toString('hex')
+        var hub = signalhub(key, ['https://signalhub.mafintosh.com'])
+        var sw = swarm(hub)
+
+        sw.on('peer', function (peer, id) {
+          console.log('connected to new peer:', id)
+          pump(peer, feed.replicate({ live: true, encrypt: false }), peer, function (err) {
+            if (err) console.log('pump error:', err)
+          })
+        })
+
+        feed.get(0, function (err, data) {
+          var buf = data.buffer
+          console.log('appending first buffer')
+          var queue = []
+          sourceBuffer.appendBuffer(buf)
+
+          sourceBuffer.addEventListener('updateend', function () {
+            console.log('ran sourceBuffer update')
+            if (queue.length > 0 && !sourceBuffer.updating) {
+              console.log('shifting queue')
+              sourceBuffer.appendBuffer(queue.shift())
+            }
+          })
+
+          sourceBuffer.addEventListener('error', function (err) {
+            console.log('sourceBuffer error: ', err)
+          })
+
+          var offset = feed.length
+          var buf = 4
+          while (buf-- && offset > 1) offset--
+
+          var start = offset
+
+          feed.download({start: start, linear: true})
+
+          feed.get(offset, function loop (err, data) {
+            var buf = data.buffer
+
+            if (sourceBuffer.updating || queue.length > 0) {
+              console.log('pushing to queue')
+              queue.push(data.buffer)
+            } else {
+              console.log('appending fresh data')
+              sourceBuffer.appendBuffer(buf)
+            }
+
+            console.log('loop time!')
+            feed.get(++offset, loop)
+          })
         })
       })
+    }
 
-      feed.get(0, function (err, data) {
-        var offset = feed.length
-        var buf = 4
-        while (buf-- && offset > 1) offset--
-
-        var start = offset
-
-        feed.download({start: start, linear: true})
-
-        feed.get(offset, function loop (err, data) {
-          console.log('loop time!')
-          feed.get(++offset, loop)
-        })
-      })
-    })
   }
 }
 
