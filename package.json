@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bankai": "^7.0.1",
     "choo": "^5.1.4",
     "end-of-stream": "^1.4.0",
     "getusermedia": "^2.0.1",
