@@ -35,7 +35,8 @@ var home = function (state, emit) {
       <h1>hypercast.club</h1>
       <h2><a href="/broadcast">Broadcastz</a></h2>
       <h2><a href="/watch">Watch</a></h2>
-      <label>key</label><input type="text" oninput=${ updateKey } value=${ state.key } />
+      <div>enter key before clicking "Watch":</div>
+      <input type="text" oninput=${ updateKey } value=${ state.key } />
     </div>
   `
 
