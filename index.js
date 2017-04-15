@@ -19,6 +19,7 @@ app.use(function (state, emitter) {
 
   emitter.on('updateKey', function (data) {
     state.key = data
+    emitter.emit('render')
   })
 })
 
@@ -34,7 +35,7 @@ var home = function (state, emit) {
       <h1>hypercast.club</h1>
       <h2><a href="/broadcast">Broadcastz</a></h2>
       <h2><a href="/watch">Watch</a></h2>
-      <label>key</label><input type="text" oninput=${ updateKey } />
+      <label>key</label><input type="text" oninput=${ updateKey } value=${ state.key } />
     </div>
   `
 
@@ -47,7 +48,7 @@ var broadcast = function (state, emit) {
   return html`
     <div class=${style} onload=${start}>
       <h1>broadcasts</h1>
-      <h3>get key in console</h3>
+      <h3>key: ${state.key}</h3>
       <video id="player" autoplay controls muted></video>
     </div>
   `
@@ -72,7 +73,7 @@ var broadcast = function (state, emit) {
           console.log('feed ready')
 
           var key = feed.discoveryKey.toString('hex')
-          console.log('broadcast key:', feed.key.toString('hex'))
+          updateKey(key)
 
           var hub = signalhub(key, ['https://signalhub.mafintosh.com'])
 
@@ -104,6 +105,10 @@ var broadcast = function (state, emit) {
         })
       }
     })
+  }
+
+  function updateKey (key) {
+    emit('updateKey', key)
   }
 }
 
