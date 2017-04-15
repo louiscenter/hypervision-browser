@@ -72,10 +72,12 @@ var broadcast = function (state, emit) {
         feed.on('ready', function () {
           console.log('feed ready')
 
-          var key = feed.discoveryKey.toString('hex')
+          var key = feed.key.toString('hex')
+          var discoveryKey = feed.discoveryKey.toString('hex')
+
           updateKey(key)
 
-          var hub = signalhub(key, ['https://signalhub.mafintosh.com'])
+          var hub = signalhub(discoveryKey, ['https://signalhub.mafintosh.com'])
 
           var sw = swarm(hub)
           sw.on('peer', function (peer, id) {
