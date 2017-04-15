@@ -33,7 +33,7 @@ var home = function (state, emit) {
   return html`
     <div class=${style}>
       <h1>hypercast.club</h1>
-      <h2><a href="/broadcast">Broadcastz</a></h2>
+      <h2><a href="/broadcast">Broadcast</a></h2>
       <h2><a href="/watch">Watch</a></h2>
       <div>enter key before clicking "Watch":</div>
       <input type="text" oninput=${ updateKey } value=${ state.key } />
