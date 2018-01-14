@@ -4,28 +4,22 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "bankai index.js --debug --css [ -u sheetify-nested ]",
-    "build": "bankai build index.js dist/ --css [ -u sheetify-nested ]"
+    "start": "bankai start"
   },
-  "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "bankai": "^7.0.1",
-    "choo": "^5.1.4",
-    "end-of-stream": "^1.4.0",
+    "choo": "^6.6.1",
     "getusermedia": "^2.0.1",
-    "hypercore": "^5.6.1",
+    "hypercore": "^6.12.0",
     "media-recorder-stream": "^2.1.1",
     "pump": "^1.0.2",
-    "random-access-memory": "^2.3.0",
-    "sheetify": "^6.0.1",
-    "signalhub": "^4.8.0",
+    "random-access-memory": "^2.4.0",
+    "signalhub": "^4.9.0",
     "webm-cluster-stream": "^1.0.0",
-    "webrtc-swarm": "^2.8.0"
+    "webrtc-swarm": "^2.9.0"
   },
   "devDependencies": {
-    "bankai": "^7.0.0",
-    "sheetify-nested": "^1.0.2"
+    "bankai": "^8.1.0"
   }
 }
