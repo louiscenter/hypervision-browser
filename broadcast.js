@@ -7,6 +7,7 @@ var hypercore = require('hypercore')
 var ram = require('random-access-memory')
 var pump = require('pump')
 var cluster = require('webm-cluster-stream')
+var mimeType = require('./lib/getMimeType')(window.MediaRecorder.isTypeSupported)
 
 module.exports = broadcast
 
@@ -38,7 +39,7 @@ function broadcast (state, emit) {
       el_preview.srcObject = stream
 
       var mediaRecorder = recorder(stream, {
-          mimeType: 'video/webm;codecs=vp9,opus',
+          mimeType: mimeType,
           videoBitsPerSecond: 200000,
           audioBitsPerSecond: 32000
       })
