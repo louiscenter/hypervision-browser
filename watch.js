@@ -1,5 +1,5 @@
 var html = require('choo/html')
-var signalhub = require('signalhubws')
+var signalhub = require('signalhub')
 var swarm = require('webrtc-swarm')
 var hypercore = require('hypercore')
 var ram = require('random-access-memory')
@@ -48,7 +48,7 @@ function watch (state, emit) {
       console.log('downloading feed')
 
       var key = feed.discoveryKey.toString('hex')
-      var hub = signalhub(key, ['wss://soyuka.me:8010'])
+      var hub = signalhub(key, ['https://signalhub-tvwgmvuztw.now.sh'])
       var sw = swarm(hub)
       console.log('connecting to swarm')
 
