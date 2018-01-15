@@ -3,8 +3,6 @@ var signalhub = require('signalhub')
 var swarm = require('webrtc-swarm')
 var hypercore = require('hypercore')
 var ram = require('random-access-memory')
-var signalhub = require('signalhub')
-var swarm = require('webrtc-swarm')
 var pump = require('pump')
 
 module.exports = watch
