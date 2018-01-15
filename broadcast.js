@@ -1,5 +1,5 @@
 var html = require('choo/html')
-var signalhub = require('signalhub')
+var signalhub = require('signalhubws')
 var swarm = require('webrtc-swarm')
 var getUserMedia = require('getusermedia')
 var recorder = require('media-recorder-stream')
@@ -50,7 +50,7 @@ function broadcast (state, emit) {
         var discoveryKey = feed.discoveryKey.toString('hex')
         emit('broadcast:key:set', key)
 
-        var hub = signalhub(discoveryKey, ['https://signalhub-tvwgmvuztw.now.sh'])
+        var hub = signalhub(discoveryKey, ['wss://soyuka.me:8010'])
         var sw = swarm(hub)
         sw.on('peer', function (peer, id) {
           pump(peer, feed.replicate({ live: true, encrypt: false }), peer)
