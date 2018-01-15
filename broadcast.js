@@ -5,8 +5,6 @@ var getUserMedia = require('getusermedia')
 var recorder = require('media-recorder-stream')
 var hypercore = require('hypercore')
 var ram = require('random-access-memory')
-var signalhub = require('signalhub')
-var swarm = require('webrtc-swarm')
 var pump = require('pump')
 var cluster = require('webm-cluster-stream')
 
