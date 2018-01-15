@@ -4,6 +4,7 @@ var swarm = require('webrtc-swarm')
 var hypercore = require('hypercore')
 var ram = require('random-access-memory')
 var pump = require('pump')
+var mimeType = require('./lib/getMimeType')(window.MediaSource.isTypeSupported)
 
 module.exports = watch
 
@@ -36,7 +37,7 @@ function watch (state, emit) {
   }
 
   function open () {
-    var sourceBuffer = mediaSource.addSourceBuffer('video/webm;codecs=vp9,opus')
+    var sourceBuffer = mediaSource.addSourceBuffer(mimeType)
 
     var hash = document.getElementById('key-input').value
     var feed = hypercore(ram, hash, {sparse: true})
