@@ -22,7 +22,7 @@ $ npm start
 ```
 
 ## Instructions
-**NOTE: Please test in *both* Chrome & Firefox. Sometimes one works, and the other doesn't. I'm not sure why.**
+**NOTE: Please test in *both* Firefox & Chrome. Sometimes one works, and the other doesn't. I'm not sure why.**
 
 Open two tabs inside the same browser, and navigate each to `http://localhost:8080`.
 
