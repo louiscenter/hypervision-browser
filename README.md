@@ -22,25 +22,27 @@ $ npm start
 ```
 
 ## Instructions
-**NOTE: Please test in Chrome. Firefox currently has issues with the `signalhub` server this repo uses.**
+**NOTE: Please test in *both* Chrome & Firefox. Sometimes one works, and the other doesn't. I'm not sure why.**
 
-Open two browser windows, and navigate each to `http://localhost:8080`.
+Open two tabs inside the same browser, and navigate each to `http://localhost:8080`.
 
-- In one window, open the `broadcast` page.
+- In one tab, open the `broadcast` page.
 - In the other, open the `watch` page.
 
-Make sure to open the devtools console in each window.
+Make sure to open the devtools console in each tab.
 
-- In the `broadcast` window, press the `[Start broadcast]` button. Your browser should ask for access to your webcam and microphone. For this to work, you will need to allow access.
+- In the `broadcast` tab, press the `[Start broadcast]` button. Your browser should ask for access to your webcam and microphone. For this to work, you will need to allow access.
 
 - Your broadcast has now begun. Copy the `key` underneath the `[Start broadcast]` button to your clipboard.
 
-- In the `watch` window, paste the key you just copied into the `Key:` input field, then press the `[Watch broadcast]` button above. This window will now try connecting to the broadcast in the other window.
+- In the `watch` tab, paste the key you just copied into the `Key:` input field, then press the `[Watch broadcast]` button above. This tab will now try connecting to the broadcast in the other tab.
 
 ## Current issues
-- Joining the swarm can be somewhat unreliable. For this, we are using a `signalhub` server, which I've installed on a `now.sh` instance to co-ordinate `WebRTC` connections. In my own test, the success rate of connecting one peer to the other is about 50%. I'm very new to `WebRTC`, so I'm unsure why.
+- Joining the swarm can often be unreliable. For this, we are using a `signalhubws` server, which has been installed on a `now.sh` instance to co-ordinate `WebRTC` connections. Connection success rates vary, sometimes because of the browser you're using. I'm not sure why.
 
 - If peer connection is successful, the viewer will tend to download the first and second blocks of the `dat`/`hypercore` feed, and then either timeout before it can download anymore, or just stop working altogether. Once again, I'm very new to `WebRTC`, so I'm unsure as to why. Getting `dat` feeds to replicate between peers using `node` is pretty flawless, but in the browser success has been patchy.
+
+- If successive block downloads are successful, incoming video data should start being appended to a `MediaSource` object. However, I haven't been able to successfully make the `<video>` element on the `watch` page playback. I'm not sure if I'm appending data incorrectly or not.
 
 - Any feedback/ideas regarding the issues above is much appreciated. I'd be lying if I said I really knew what I was doing.
 
