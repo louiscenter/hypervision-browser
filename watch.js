@@ -1,15 +1,16 @@
 var html = require('choo/html')
-var signalhub = require('signalhub')
+var signalhub = require('signalhubws')
 var swarm = require('webrtc-swarm')
 var hypercore = require('hypercore')
 var ram = require('random-access-memory')
 var pump = require('pump')
 var mimeType = require('./lib/getMimeType')(window.MediaSource.isTypeSupported)
+var config = require('./config')
 
 module.exports = watch
 
 function watch (state, emit) {
-  var mediaSource = new MediaSource()
+  var mediaSource = new window.MediaSource()
 
   return html`
     <div>
@@ -32,8 +33,8 @@ function watch (state, emit) {
   function startWatching () {
     mediaSource.addEventListener('sourceopen', open)
 
-    var el_player = document.getElementById('player')
-    el_player.src = URL.createObjectURL(mediaSource)
+    var elPlayer = document.getElementById('player')
+    elPlayer.src = window.URL.createObjectURL(mediaSource)
   }
 
   function open () {
@@ -48,7 +49,7 @@ function watch (state, emit) {
       console.log('downloading feed')
 
       var key = feed.discoveryKey.toString('hex')
-      var hub = signalhub(key, ['https://signalhub-tvwgmvuztw.now.sh'])
+      var hub = signalhub(key, config.signalhub)
       var sw = swarm(hub)
       console.log('connecting to swarm')
 
