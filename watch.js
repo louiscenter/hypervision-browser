@@ -35,6 +35,7 @@ function watch (state, emit) {
 
     var elPlayer = document.getElementById('player')
     elPlayer.src = window.URL.createObjectURL(mediaSource)
+    elPlayer.play()
   }
 
   function open () {
