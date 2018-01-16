@@ -1,5 +1,5 @@
 var html = require('choo/html')
-var signalhub = require('signalhub')
+var signalhub = require('signalhubws')
 var swarm = require('webrtc-swarm')
 var getUserMedia = require('getusermedia')
 var recorder = require('media-recorder-stream')
@@ -8,6 +8,7 @@ var ram = require('random-access-memory')
 var pump = require('pump')
 var cluster = require('webm-cluster-stream')
 var mimeType = require('./lib/getMimeType')(window.MediaRecorder.isTypeSupported)
+var config = require('./config')
 
 module.exports = broadcast
 
@@ -34,14 +35,14 @@ function broadcast (state, emit) {
     getUserMedia(function (err, stream) {
       if (err) return console.log('getUserMedia error', err)
 
-      var el_preview = document.getElementById('preview')
-      el_preview.muted = true
-      el_preview.srcObject = stream
+      var elPreview = document.getElementById('preview')
+      elPreview.muted = true
+      elPreview.srcObject = stream
 
       var mediaRecorder = recorder(stream, {
-          mimeType: mimeType,
-          videoBitsPerSecond: 200000,
-          audioBitsPerSecond: 32000
+        mimeType: mimeType,
+        videoBitsPerSecond: 200000,
+        audioBitsPerSecond: 32000
       })
 
       var feed = hypercore(ram)
@@ -50,13 +51,12 @@ function broadcast (state, emit) {
         var discoveryKey = feed.discoveryKey.toString('hex')
         emit('broadcast:key:set', key)
 
-        var hub = signalhub(discoveryKey, ['https://signalhub-tvwgmvuztw.now.sh'])
+        var hub = signalhub(discoveryKey, config.signalhub)
         var sw = swarm(hub)
         sw.on('peer', function (peer, id) {
           pump(peer, feed.replicate({ live: true, encrypt: false }), peer)
         })
       })
-
 
       var mediaStream = pump(mediaRecorder, cluster())
       mediaStream.on('data', function (data) {
