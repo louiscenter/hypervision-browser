@@ -33,7 +33,7 @@ function broadcast (state, emit) {
 
   function startBroadcasting () {
     getUserMedia(function (err, stream) {
-      if (err) return console.log('getUserMedia error', err)
+      if (err) return console.log('😵 getUserMedia error', err)
 
       var elPreview = document.getElementById('preview')
       elPreview.muted = true
@@ -60,7 +60,7 @@ function broadcast (state, emit) {
 
       var mediaStream = pump(mediaRecorder, cluster())
       mediaStream.on('data', function (data) {
-        console.log('appending to broadcast:', data)
+        console.log('⚡️ appending to broadcast:', data)
         feed.append(data)
       })
     })

@@ -43,18 +43,15 @@ function watch (state, emit) {
     var hash = document.getElementById('key-input').value
     var feed = hypercore(ram, hash, {sparse: true})
     feed.on('ready', function () {
-      console.log('feed ready')
-
       feed.download({ linear: true })
-      console.log('downloading feed')
 
       var key = feed.discoveryKey.toString('hex')
       var hub = signalhub(key, config.signalhub)
       var sw = swarm(hub)
-      console.log('connecting to swarm')
+      console.log('🌐 connecting to swarm')
 
       sw.on('peer', function (peer, id) {
-        console.log('new peer found:', id)
+        console.log('🙋 new peer found:', id)
         pump(peer, feed.replicate({ live: true, download: true, encrypt: false }), peer)
       })
 
@@ -66,9 +63,8 @@ function watch (state, emit) {
       })
 
       function getBlock (cb) {
-        console.log('getting block', block)
         feed.get(block, function (err, data) {
-          console.log('got block ' + block, data)
+          console.log('⚡️ appending block ' + block)
           sourceBuffer.appendBuffer(data.buffer)
           block++
 
